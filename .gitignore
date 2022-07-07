@@ -1,0 +1,3 @@
+tests/envs/GuiSimultionLauncher.ini
+CrowdWalkGym/__pycache__/
+CrowdWalkGym/envs/__pycache__/
