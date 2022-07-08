@@ -1,0 +1,50 @@
+{
+  "map_file":"map.xml",
+  "generation_file":"generation.json",
+  "scenario_file":"scenario.json",
+  "fallback_file":"fallbackParameters.json",
+
+  "node_appearance_file":"appearance_node.json",
+  "link_appearance_file":"appearance_link.json",
+  "agent_size":8.0,
+
+  "auto_simulation_start":true,
+  "all_agent_speed_zero_break":false,
+  "exit_with_simulation_finished": true,
+
+  "individual_pedestrians_log_dir":"log/",
+
+  "record_simulation_screen":false,
+  "screenshot_dir": "log/screenshots/",
+  "clear_screenshot_dir":true,
+  "screenshot_image_type":"png",
+
+  "use_ruby": true,
+  "ruby_load_path": "./",
+  "ruby_simulation_wrapper_class":"GateOperation",
+  "ruby_init_script":"
+    require 'GateOperation'
+    require 'UtilityAgent'
+
+    $settings = {
+      # コンソールに状態表示をするか
+      monitor: true,
+
+      # time duration of 1 step of reinforcement learning
+      step_duration: 300,
+      env: 'two_routes',
+      path_to_gym_envs: '/home/nishida/Project/CrowdWalkGym/CrowdWalkGym/envs/',
+
+      # ノードからリンクに入って来る人数をカウントする場合は true, 出て行く人数をカウントする場合は false
+      count_by_entering: false,
+
+      # 通過エージェント数をカウントするノード・リンクのタグ
+      # ※末端のノードは指定出来ないので注意(カウントされない)
+      counting_positions: [
+        {
+          link_tag: 'goal_link',      # 該当するリンクは一つだけであること
+          node_tag: 'goal'     # 該当するノードは一つだけであること
+        }
+      ]
+    }"
+}

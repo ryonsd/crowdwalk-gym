@@ -1,0 +1,19 @@
+[
+    {
+      "atTime": "00:00:00",
+      "type": "Initiate"
+    },
+    {
+        "atTime": "00:00:00",
+        "type": "Alert",
+        "placeTag": "start_link",
+        "message": "guide_route2",
+        "onoff": "false"
+      },
+      {
+        "atTime": "00:00:00",
+        "type": "Alert",
+        "placeTag": "start_link",
+        "message": "guide_route1"
+      }
+]

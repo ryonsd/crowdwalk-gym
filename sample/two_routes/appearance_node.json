@@ -1,0 +1,17 @@
+{
+    generation: {
+        diameter: 15.0,
+        color: 'BLACK',
+        transparency: 0.0
+    },
+    junction: {
+        diameter: 15.0,
+        color: 'BLACK',
+        transparency: 0.1
+    },
+    goal: {
+        diameter: 15.0,
+        color: 'BLACK',
+        transparency: 0.0
+    }
+}

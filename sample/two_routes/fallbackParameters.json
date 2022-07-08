@@ -1,0 +1,21 @@
+{
+    "agentHandler": {
+      "zeroSpeedThreshold": 0.0,
+      "logColumnsOfIndividualPedestrians": [
+        "current_traveling_period",
+        "pedestrian_tag",
+        "pedestrianID",
+        "current_linkID"
+      ],
+      "tickIntervalForIndividualPedestriansLog": 1,
+      "logAgentsOfIndividualPedestrians": {
+      },
+      "_": null
+    },
+    "generation": {
+      "rule": "EACH",
+      "conditions":null,
+      "speedModel": "LANE",
+      "_": null
+    }
+}

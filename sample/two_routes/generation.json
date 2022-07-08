@@ -1,0 +1,13 @@
+#{ "version" : 2}
+[
+  {"rule":"EACH",
+    "agentType": {
+      "className": "RubyAgent",
+      "rubyAgentClass": "UtilityAgent"
+    },
+    "total":1000,
+    "startPlace":"generation_link","conditions":null,
+    "startTime":"00:00:00","duration":1000.0,
+    "goal":"goal",
+    "plannedRoute":[]}
+]

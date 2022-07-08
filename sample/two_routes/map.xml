@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group defaultHeight="0.0" id="_p00000" imageFileName="" maxHeight="5.0" minHeight="-5.0" pNorthWestX="5.0" pNorthWestY="45.0" pSouthEastX="600.0" pSouthEastY="600.0" pTheta="0.0" r="0.0" scale="1.0" sx="1.0" sy="1.0" tx="0.0" ty="0.0" zone="0">
+  <tag>root</tag>
+  <Node height="0.0" id="_p00001" x="319.0" y="250.0">
+    <tag>start</tag>
+    <link id="_p00011"/>
+    <link id="_p00014"/>
+  </Node>
+  <Node height="0.0" id="_p00002" x="411.0" y="250.0">
+    <tag>junction</tag>
+    <link id="_p00004"/>
+    <link id="_p00011"/>
+    <link id="_p00021"/>
+  </Node>
+  <Node height="0.0" id="_p00003" x="494.0" y="201.0">
+    <link id="_p00004"/>
+    <link id="_p00006"/>
+  </Node>
+  <Link from="_p00002" id="_p00004" length="100.0" to="_p00003" width="2.0">
+    <tag>regular_link</tag>
+    <tag>route1_1</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+  </Link>
+  <Node height="0.0" id="_p00005" x="597.0" y="195.0">
+    <link id="_p00006"/>
+    <link id="_p00024"/>
+  </Node>
+  <Link from="_p00003" id="_p00006" length="100.0" to="_p00005" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route1_2</tag>
+  </Link>
+  <Node height="0.0" id="_p00007" x="771.0" y="254.0">
+    <link id="_p00010"/>
+    <link id="_p00022"/>
+    <link id="_p00025"/>
+  </Node>
+  <Node height="0.0" id="_p00009" x="966.0743801652892" y="254.07438016528923">
+    <tag>goal</tag>
+    <link id="_p00010"/>
+  </Node>
+  <Link from="_p00007" id="_p00010" length="200.0" to="_p00009" width="2.0">
+    <tag>regular_link</tag>
+    <tag>goal_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+  </Link>
+  <Link from="_p00002" id="_p00011" length="100.0" to="_p00001" width="2.0">
+    <tag>start_link</tag>
+    <tag>ONE-WAY-BACKWARD</tag>
+  </Link>
+  <Node height="0.0" id="_p00012" x="410.0" y="346.0">
+    <link id="_p00021"/>
+    <link id="_p00028"/>
+  </Node>
+  <Node height="0.0" id="_p00013" x="528.0" y="511.0">
+    <link id="_p00016"/>
+    <link id="_p00027"/>
+  </Node>
+  <Node height="0.0" id="_p00015" x="656.0" y="516.0">
+    <tag>route2</tag>
+    <link id="_p00016"/>
+    <link id="_p00018"/>
+  </Node>
+  <Link from="_p00013" id="_p00016" length="100.0" to="_p00015" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route2_4</tag>
+  </Link>
+  <Node height="0.0" id="_p00017" x="741.0" y="460.0">
+    <link id="_p00018"/>
+    <link id="_p00020"/>
+  </Node>
+  <Link from="_p00015" id="_p00018" length="100.0" to="_p00017" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route2_5</tag>
+  </Link>
+  <Node height="0.0" id="_p00019" x="768.0" y="366.0">
+    <link id="_p00020"/>
+    <link id="_p00022"/>
+  </Node>
+  <Link from="_p00017" id="_p00020" length="100.0" to="_p00019" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route2_6</tag>
+  </Link>
+  <Link from="_p00012" id="_p00021" length="100.0" to="_p00002" width="2.0">
+    <tag>regular_link</tag>
+    <tag>route2_1</tag>
+    <tag>ONE-WAY-BACKWARD</tag>
+  </Link>
+  <Link from="_p00019" id="_p00022" length="100.0" to="_p00007" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route2_7</tag>
+  </Link>
+  <Node height="0.0" id="_p00023" x="696.0" y="206.0">
+    <link id="_p00024"/>
+    <link id="_p00025"/>
+  </Node>
+  <Link from="_p00005" id="_p00024" length="100.0" to="_p00023" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route1_3</tag>
+  </Link>
+  <Link from="_p00023" id="_p00025" length="100.0" to="_p00007" width="1.0">
+    <tag>narrow_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+    <tag>route1_4</tag>
+  </Link>
+  <Node height="0.0" id="_p00026" x="436.0" y="438.0">
+    <link id="_p00027"/>
+    <link id="_p00028"/>
+  </Node>
+  <Link from="_p00013" id="_p00027" length="100.0" to="_p00026" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-BACKWARD</tag>
+    <tag>route2_3</tag>
+  </Link>
+  <Link from="_p00026" id="_p00028" length="100.0" to="_p00012" width="2.0">
+    <tag>regular_link</tag>
+    <tag>ONE-WAY-BACKWARD</tag>
+    <tag>route2_2</tag>
+  </Link>
+  <Node height="0.0" id="_p00008" x="225.0" y="251.0">
+    <tag>generation</tag>
+    <link id="_p00014"/>
+  </Node>
+  <Link from="_p00008" id="_p00014" length="100.0" to="_p00001" width="10.0">
+    <tag>generation_link</tag>
+    <tag>ONE-WAY-FORWARD</tag>
+  </Link>
+</Group>
