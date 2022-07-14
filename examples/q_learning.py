@@ -1,16 +1,19 @@
-# -*- coding: utf-8 -*-
+"""
+DQN pytorch implementation is based on
+Andrew Gordienko: Reinforcement Learning: DQN w Pytorch
+https://andrew-gordienko.medium.com/reinforcement-learning-dqn-w-pytorch-7c6faad3d1e
+"""
+
+
 import numpy as np
-import argparse
 import os
 import json
-import gym
 import sys
 import random
-import math
 import datetime
-from collections import namedtuple, deque
 from itertools import count
 
+import gym
 sys.path.append("../")
 import CrowdWalkGym
 
@@ -23,125 +26,178 @@ import torchvision.transforms as T
 import tensorboardX as tb
 
 
-Transition = namedtuple('Transition',
-                        ['state',
-                         'action',
-                         'reward',
-                         'next_state',
-                         'terminal'])
+class ReplayBuffer:
+    def __init__(self):
+        self.mem_count = 0
+        
+        self.states = np.zeros((MEM_SIZE, *env.observation_space.shape),dtype=np.float32)
+        self.actions = np.zeros(MEM_SIZE, dtype=np.int64)
+        self.rewards = np.zeros(MEM_SIZE, dtype=np.float32)
+        self.states_ = np.zeros((MEM_SIZE, *env.observation_space.shape),dtype=np.float32)
+        self.dones = np.zeros(MEM_SIZE, dtype=np.bool)
+    
+    def add(self, state, action, reward, state_, done):
+        mem_index = self.mem_count % MEM_SIZE
+        
+        self.states[mem_index]  = state
+        self.actions[mem_index] = action
+        self.rewards[mem_index] = reward
+        self.states_[mem_index] = state_
+        self.dones[mem_index] =  1 - done
+
+        self.mem_count += 1
+    
+    def sample(self):
+        MEM_MAX = min(self.mem_count, MEM_SIZE)
+        batch_indices = np.random.choice(MEM_MAX, BATCH_SIZE, replace=True)
+        
+        states  = self.states[batch_indices]
+        actions = self.actions[batch_indices]
+        rewards = self.rewards[batch_indices]
+        states_ = self.states_[batch_indices]
+        dones   = self.dones[batch_indices]
+
+        return states, actions, rewards, states_, dones
 
 
-class ReplayMemory(object):
+class Network(nn.Module):
+    def __init__(self, input_shape, output_shape):
+        super().__init__()
 
-    def __init__(self, capacity):
-        self.memory = deque([],maxlen=capacity)
+        self.fc1 = nn.Linear(input_shape, FC1_DIMS)
+        self.fc2 = nn.Linear(FC1_DIMS, FC2_DIMS)
+        self.fc3 = nn.Linear(FC2_DIMS, output_shape)
 
-    def push(self, *args):
-        """Save a transition"""
-        self.memory.append(Transition(*args))
-
-    def sample(self, batch_size):
-        return random.sample(self.memory, batch_size)
-
-    def __len__(self):
-        return len(self.memory)
-
-
-class DQN(nn.Module):
-
-    def __init__(self, inputs, outputs):
-        super(DQN, self).__init__()
-        self.fc1 = nn.Linear(inputs, 100)
-        self.fc2 = nn.Linear(100, 100)
-        self.fc3 = nn.Linear(100, 100)
-        self.fc4 = nn.Linear(100, outputs)
-
+        self.optimizer = optim.Adam(self.parameters(), lr=LEARNING_RATE)
+        self.loss = nn.MSELoss()
+        self.to(DEVICE)
+    
     def forward(self, x):
-        x = x.to(device)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        y = self.fc4(x)
-        return y
+        x = self.fc3(x)
+
+        return x
+
+class DQN_Solver:
+    def __init__(self, nS, nA):
+        self.memory = ReplayBuffer()
+        self.exploration_rate = EXPLORATION_MAX
+        self.network = Network(input_shape=nS, output_shape=nA)
+
+    def choose_action(self, observation):
+        if random.random() < self.exploration_rate:
+            return env.action_space.sample()
+        
+        state = torch.tensor(observation).float().detach()
+        state = state.to(DEVICE)
+        state = state.unsqueeze(0)
+        q_values = self.network(state)
+        return torch.argmax(q_values).item()
+    
+    def learn(self):
+        if self.memory.mem_count < BATCH_SIZE:
+            return 0
+        
+        states, actions, rewards, states_, dones = self.memory.sample()
+        states = torch.tensor(states , dtype=torch.float32).to(DEVICE)
+        actions = torch.tensor(actions, dtype=torch.long).to(DEVICE)
+        rewards = torch.tensor(rewards, dtype=torch.float32).to(DEVICE)
+        states_ = torch.tensor(states_, dtype=torch.float32).to(DEVICE)
+        dones = torch.tensor(dones, dtype=torch.bool).to(DEVICE)
+        batch_indices = np.arange(BATCH_SIZE, dtype=np.int64)
+
+        q_values = self.network(states)
+        next_q_values = self.network(states_)
+        
+        predicted_value_of_now = q_values[batch_indices, actions]
+        predicted_value_of_future = torch.max(next_q_values, dim=1)[0]
+        
+        q_target = rewards + GAMMA * predicted_value_of_future * dones
+
+        loss = self.network.loss(q_target, predicted_value_of_now)
+        self.network.optimizer.zero_grad()
+        loss.backward()
+        self.network.optimizer.step()
+
+        self.exploration_rate *= EXPLORATION_DECAY
+        self.exploration_rate = max(EXPLORATION_MIN, self.exploration_rate)
+
+        return loss.item()
+
+    def returning_epsilon(self):
+        return self.exploration_rate
 
 
+def step(e_step):
+    # get state
+    is_step = False
+    while not is_step:
+        try:
+            with open("log/history.json", "r") as f:
+                history = json.load(f)
+            state = history[str(e_step)]["state"]
+            is_step = True
+        except:
+            continue
+    
+    # take action
+    action = agent.choose_action(state)
 
-def optimize_model(gamma):
-    if len(memory) < BATCH_SIZE:
-        return torch.tensor(0)
-    transitions = memory.sample(BATCH_SIZE)
- 
-    batch = Transition(*zip(*transitions))
+    history[str(e_step)]["action"] = action
+    with open("log/history.json", "w") as f:
+        json.dump(history, f)
 
-    state_batch = torch.cat(batch.state)
-    action_batch = torch.cat(batch.action)
-    reward_batch = torch.cat(batch.reward)
+    # step
+    # next_state, reward, done
+    is_step = False
+    while not is_step:
+        try:
+            with open("log/history.json", "r") as f:
+                history = json.load(f)
+            if not np.isnan(history[str(e_step)]["next_state"]).sum():
+                is_step = True
+        except:
+            continue
+    
+    next_state = history[str(e_step)]["next_state"]
+    reward = history[str(e_step)]["reward"] / 150
+    done = history[str(e_step)]["done"]
 
-    non_final_mask = torch.tensor(tuple(map(lambda t: t is not True,
-                                          batch.terminal)), device=device, dtype=torch.bool)
+    return state, action, next_state, reward, done
+    
 
-    non_final_next_states = torch.cat([s for t, s in zip(batch.terminal, batch.next_state)
-                                                if t is not True])
-    # Predict Q values
-    state_action_values = policy_net(state_batch).gather(1, action_batch)
-
-    # Compute the expected Q values
-    next_state_values = torch.zeros(BATCH_SIZE, device=device)
-    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1)[0].detach()
-    expected_state_action_values = reward_batch + (gamma * next_state_values)
-
-    # Compute Huber loss
-    # criterion = nn.SmoothL1Loss()
-    criterion = nn.MSELoss()
-    loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
-
-    # Optimize the model
-    optimizer.zero_grad()
-    loss.backward()
-    for param in policy_net.parameters():
-        param.grad.data.clamp_(-1, 1)
-    optimizer.step()
-
-    return loss
-
-
-
+##########################################################################
 if __name__ == '__main__':
     env = gym.make("two-routes-v0")
-    # logdir = "log/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    logdir = "log/train_log"
-    if os.path.isfile("log/history.json"):
-        os.remove("log/history.json")
+
+    logdir = "log/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     writer = tb.SummaryWriter(logdir=logdir)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    FC1_DIMS = 1024
+    FC2_DIMS = 512
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    BATCH_SIZE = 128
-    GAMMA = 0.999
-    EPS_START = 1.0
-    EPS_END = 0.01
-    EPS_DECAY = 300
-    TARGET_UPDATE = 5
+    EPISODES = 1000
+    LEARNING_RATE = 0.00001 
+    MEM_SIZE = 10000
+    BATCH_SIZE = 32
+    GAMMA = 1.0
+    EXPLORATION_MAX = 1.0
+    EXPLORATION_DECAY = 0.995
+    EXPLORATION_MIN = 0.001
     LOG_EPISODE = 1
 
-    n_state = env.nS + 1
-    n_actions = env.nA
-
-    policy_net = DQN(n_state, n_actions).to(device)
-    target_net = DQN(n_state, n_actions).to(device)
-    target_net.load_state_dict(policy_net.state_dict())
-    target_net.eval()
-
-    # optimizer = optim.RMSprop(policy_net.parameters())
-    optimizer = optim.Adam(policy_net.parameters(), lr=0.00001)
-    memory = ReplayMemory(10000)
+    agent = DQN_Solver(env.nS+1, env.nA)
 
     # train
     num_episodes = 10000
     total_steps = 0
-    for e_i in range(1, num_episodes+1):
-        # print("="*40)
-        # print("episode:", e_i)
+
+    if os.path.isfile("log/history.json"):
+        os.remove("log/history.json")
+
+    for e_i in range(1, EPISODES+1):
         e_step = 0
         e_reward = 0
         e_loss = 0
@@ -152,84 +208,24 @@ if __name__ == '__main__':
 
         env.reset()
 
-        while not done:
-            # get state
-            is_step = False
-            while not is_step:
-                try:
-                    with open("log/history.json", "r") as f:
-                        history = json.load(f)
-                    state = history[str(e_step)]["state"]
-                    is_step = True
-                except:
-                    continue
-            state = list(map(float, state))
-            state = torch.tensor(state).unsqueeze(dim=0) 
+        while True:
 
-            # select action
-            # epsilon-greedy
-            eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-                math.exp(-1. * total_steps / EPS_DECAY)
-            if random.random() > eps_threshold:
-            # if 1.0 > eps_threshold:
-                with torch.no_grad():
-                    action = policy_net(state).argmax().unsqueeze(dim=0).unsqueeze(dim=0) 
-            else:
-                action = torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
-            # print(action)
-
-            # action = torch.tensor(1, device=device).unsqueeze(dim=0).unsqueeze(dim=0) 
-
-            history[str(e_step)]["action"] = action.item()
-            with open("log/history.json", "w") as f:
-                json.dump(history, f)
-
-            # step
-            # next_state, reward, done
-            is_step = False
-            while not is_step:
-                try:
-                    with open("log/history.json", "r") as f:
-                        history = json.load(f)
-                    if not np.isnan(history[str(e_step)]["next_state"]).sum():
-                        is_step = True
-                except:
-                    continue
-            
-            next_state = history[str(e_step)]["next_state"]
-            next_state = list(map(float, next_state))
-            next_state = torch.tensor(next_state).unsqueeze(dim=0) 
-
-            reward = history[str(e_step)]["reward"] / 150
-            reward = torch.tensor([reward], device=device).unsqueeze(dim=0) 
-
-            done = history[str(e_step)]["done"]
-
-            # Store the transition in memory
-            memory.push(state, action, reward, next_state, done)
-            t = Transition(state=state, action=action, reward=reward, next_state=next_state, terminal=done)
-            # print(e_step, t)
-
-            # Perform one step of the optimization (on the policy network)
-            loss = optimize_model(GAMMA)
-            # print(loss)
-            e_loss += loss.item()
+            state, action, next_state, reward, done = step(e_step)
+            agent.memory.add(state, action, reward, next_state, done)
+            e_loss += agent.learn()
 
             e_step += 1
             e_reward += reward
             total_steps += 1
 
             if done:
+                print("episode:", e_i, "episode_step:", e_step, "total_steps:", total_steps, "reward:", "{:.2f}".format(e_reward), "loss:", "{:.3f}".format(e_loss/e_step))
                 break
 
         if e_i % LOG_EPISODE == 0:
-            writer.add_scalar('epsilon', eps_threshold, e_i)
+            writer.add_scalar('epsilon', agent.returning_epsilon(), e_i)
             writer.add_scalar('loss', e_loss / e_step, e_i)
             writer.add_scalar('total_reward', e_reward, e_i)
 
         
-        if e_i % TARGET_UPDATE == 0:
-            target_net.load_state_dict(policy_net.state_dict())
-
-        print("episode:", e_i, "episode_step:", e_step, "total_steps:", total_steps, "reward:", "{:.2f}".format(e_reward.item()), "loss:", "{:.3f}".format(e_loss/e_step))
             

@@ -16,7 +16,7 @@ class TwoRoutesEnv(gym.Env):
         self.is_gui = False
 
         self.nS = 13
-        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(13,))
+        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(14,))
         
         self.nA = 2
         self.action_space = gym.spaces.Discrete(2)
