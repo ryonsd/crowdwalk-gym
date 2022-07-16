@@ -161,7 +161,7 @@ def step(e_step):
             continue
     
     next_state = history[str(e_step)]["next_state"]
-    reward = history[str(e_step)]["reward"] / 150
+    reward = history[str(e_step)]["reward"] 
     done = history[str(e_step)]["done"]
 
     return state, action, next_state, reward, done
@@ -169,7 +169,8 @@ def step(e_step):
 
 ##########################################################################
 if __name__ == '__main__':
-    env = gym.make("two-routes-v0")
+    # env = gym.make("two_routes-v0")
+    env = gym.make("moji-v0")
 
     logdir = "log/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     writer = tb.SummaryWriter(logdir=logdir)
@@ -187,8 +188,10 @@ if __name__ == '__main__':
     EXPLORATION_DECAY = 0.995
     EXPLORATION_MIN = 0.001
     LOG_EPISODE = 1
+    OBJ_SIZE = 2
 
-    agent = DQN_Solver(env.nS+1, env.nA)
+    # agent = DQN_Solver(env.nS+1, env.nA)
+    agent = DQN_Solver(env.nS, env.nA)
 
     # train
     num_episodes = 10000
@@ -199,7 +202,7 @@ if __name__ == '__main__':
 
     for e_i in range(1, EPISODES+1):
         e_step = 0
-        e_reward = 0
+        e_reward = np.zeros(OBJ_SIZE)
         e_loss = 0
         done = False
 
@@ -211,21 +214,24 @@ if __name__ == '__main__':
         while True:
 
             state, action, next_state, reward, done = step(e_step)
-            agent.memory.add(state, action, reward, next_state, done)
+            print("step", e_step, "state", state, "action", action, "next_state", next_state, "reward", reward, "done", done)
+            agent.memory.add(state, action, reward[0]/100, next_state, done)
             e_loss += agent.learn()
 
             e_step += 1
-            e_reward += reward
+            e_reward += np.array(reward)
             total_steps += 1
 
             if done:
-                print("episode:", e_i, "episode_step:", e_step, "total_steps:", total_steps, "reward:", "{:.2f}".format(e_reward), "loss:", "{:.3f}".format(e_loss/e_step))
+                # print("episode:", e_i, "episode_step:", e_step, "total_steps:", total_steps, "reward:", "{:.2f}".format(e_reward), "loss:", "{:.3f}".format(e_loss/e_step))
+                print("episode:", e_i, "episode_step:", e_step, "total_steps:", total_steps, "reward:", e_reward, "loss:", "{:.3f}".format(e_loss/e_step))
                 break
 
         if e_i % LOG_EPISODE == 0:
             writer.add_scalar('epsilon', agent.returning_epsilon(), e_i)
             writer.add_scalar('loss', e_loss / e_step, e_i)
-            writer.add_scalar('total_reward', e_reward, e_i)
+            for i in range(OBJ_SIZE):
+                writer.add_scalar('reward_'+str(i), e_reward[i], e_i)
 
         
             

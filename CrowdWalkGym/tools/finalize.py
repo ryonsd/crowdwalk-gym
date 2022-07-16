@@ -6,7 +6,7 @@ import os
 import json
 import sys
 
-def get_reward(env, log, step_s, step_e, sample_t = 10, n_obj=1):
+def get_reward(env, log, step_s, step_e, log_dir, sample_t = 30, n_obj=1):
     link_dict = {} # length, width, density of each link
 
     step_duration = step_e - step_s
@@ -31,15 +31,51 @@ def get_reward(env, log, step_s, step_e, sample_t = 10, n_obj=1):
                         link_attribute["n_ped"][t] += 1
                         link_attribute["density"][t] += 1 / (link_attribute["length"]* link_attribute["width"])
     
-    # 混雑度
+     # congestion_degree
     congestion_degree = 0
     for link_name, link_attribute in link_dict.items():
         congestion_degree += sum(link_attribute["density"] > 0.71) #.astype(int)
 
+    # travel distance
+    if os.path.exists(log_dir + "agent_dict.json"):
+        with open(log_dir + "agent_dict.json", "r") as f:
+            agent_dict = json.load(f)
+    else:
+        agent_dict = {}
+
+    agent_log = pd.Series(list(set(list(log.pedestrian_tag)))).apply(lambda x: x[1:-1].split(', '))
+
+    travel_distance = 0
+    for i in range(len(agent_log)):
+        # if the agent has arrived
+        route = np.nan 
+        distance = np.nan
+        if agent_log[i][-1] == "arrived":
+            
+            agent_id = agent_log[i][0]
+            route_ = agent_log[i][2]
+
+            if route_ == "route1":
+                route = 1
+                distance = env.route1_length
+            elif route_ == "route2":
+                route = 2
+                distance = env.route2_length
+
+            if agent_id not in agent_dict:
+                travel_distance += distance
+            agent_dict[agent_id] = {"state": "arrived", "route":route, "travel_distance": distance}
+
+    # print(len(agent_dict))
+    with open(log_dir + "agent_dict.json", "w") as f:
+        json.dump(agent_dict, f,  indent=2, ensure_ascii=False)
+
+
+    # reward
     if n_obj == 1:
         reward = -int(congestion_degree)
-    # else:
-    #     reward = []
+    else:
+        reward = [-int(congestion_degree), -float(travel_distance)]
 
     done = True
 
@@ -62,19 +98,22 @@ if __name__ == '__main__':
     import sys
     sys.path.append((path_to_gym+"envs/"))
     from two_routes import TwoRoutesEnv
+    from moji import MojiEnv
 
     if env_name == "two_routes":
         env = TwoRoutesEnv()
+    elif env_name == "moji":
+        env = MojiEnv()
 
     log = pd.read_csv(sim_log_dir + "log_individual_pedestrians.csv")
 
-    reward, done = get_reward(env, log, sim_previous_step, sim_final_step)
+    reward, done = get_reward(env, log, sim_previous_step, sim_final_step, agent_log_dir, n_obj=2)
 
     with open(agent_log_dir + "history.json", "r") as f:
         history = json.load(f)
 
     history[str(step)]["reward"] = reward
-    history[str(step)]["next_state"] = list(np.zeros(env.nS+1))
+    history[str(step)]["next_state"] = list(np.zeros(env.nS))
     history[str(step)]["done"] = done
 
     with open(agent_log_dir + "history.json", "w") as f:

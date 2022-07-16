@@ -16,7 +16,7 @@ class TwoRoutesEnv(gym.Env):
         self.is_gui = False
 
         self.nS = 13
-        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(14,))
+        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(13,))
         
         self.nA = 2
         self.action_space = gym.spaces.Discrete(2)
@@ -39,6 +39,9 @@ class TwoRoutesEnv(gym.Env):
 
             "goal_link": {"id": "_p00010" ,"length": 200,  "width": 2},
         }
+
+        self.route1_length = 0.4
+        self.route2_length = 0.7
 
     def reset(self):
         if self.is_gui:
