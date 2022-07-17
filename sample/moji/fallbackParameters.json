@@ -1,0 +1,53 @@
+{
+  "agentHandler": {
+    "zeroSpeedThreshold": 0.0,
+    "logColumnsOfIndividualPedestrians": [
+      "current_traveling_period",
+      "pedestrian_tag",
+      "pedestrianID",
+      "current_linkID"
+    ],
+    "tickIntervalForIndividualPedestriansLog": 1,
+    "logAgentsOfIndividualPedestrians": {
+    },
+    "_": null
+  },
+  "generation": {
+    "rule": "EACH",
+    "conditions":null,
+    "speedModel": "LANE",
+    "_": null
+  },
+  "agent": {
+    "className": "RubyAgent",
+    "rubyAgentClass":"UtilityAgent",
+    "weight": -0.0,
+    "trail": 0.0,
+    "margin": 0.0,
+    "rule": [
+      { "": "if", "condition": {
+          "": "placeHasTag", "tag": "GL_R1"
+        },
+        "then":[
+          {"": "log","tag": "goal R1"}
+        ]
+      },
+      { "": "if", "condition": {
+          "": "placeHasTag", "tag": "GL_R2"
+        },
+        "then":[
+          {"": "log","tag": "goal R2"}
+        ]
+      },
+      { "": "if", "condition": {
+          "": "placeHasTag", "tag": "GL_R3"
+        },
+        "then":[
+          {"": "log","tag": "goal R3"}
+        ]
+      }
+    ],
+    "_": null
+  },
+  "_": null
+}

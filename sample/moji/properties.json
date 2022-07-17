@@ -1,0 +1,72 @@
+{
+  "map_file":"path_to_crowdwalk_config_dir/map.xml",
+  "generation_file":"path_to_crowdwalk_config_dir/generation.json",
+  "scenario_file":"path_to_crowdwalk_config_dir/scenario.json",
+  "fallback_file":"path_to_crowdwalk_config_dir/fallbackParameters.json",
+
+  "node_appearance_file":"path_to_crowdwalk_config_dir/appearance_node.json",
+  "link_appearance_file":"path_to_crowdwalk_config_dir/appearance_link.json",
+  "polygon_appearance_file":"path_to_crowdwalk_config_dir/appearance_polygon.json",
+  "camera_2d_file":"path_to_crowdwalk_config_dir/camera.json",
+  "agent_size":3.0,
+  "zoom": 1.6,
+
+  "auto_simulation_start":true,
+  "all_agent_speed_zero_break":false,
+  "exit_with_simulation_finished": true,
+
+  "individual_pedestrians_log_dir":"path_to_run_dir/",
+
+  "record_simulation_screen":false,
+  "_screenshot_dir": "log/screenshots/",
+  "clear_screenshot_dir":true,
+  "screenshot_image_type":"png",
+
+  "use_ruby": true,
+  "ruby_load_path": "path_to_crowdwalk_config_dir/",
+  "ruby_simulation_wrapper_class":"GateOperationWithRailway",
+  "ruby_init_script":"
+    require 'GateOperationWithRailway'
+    require 'UtilityAgent'
+
+    $settings = {
+      # コンソールに状態表示をするか
+      monitor: false,
+
+      # 
+      step_duration: 600,
+      env: 'moji',
+      path_to_crowdwalk_config_dir: 'path_to_crowdwalk_config_dir/',
+      path_to_gym: 'path_to_gym_',
+      path_to_agent_log: 'path_to_run_dir/',
+
+      gate_node_tag: 'EXIT_STATION_ROOT',
+
+      # ノードからリンクに入って来る人数をカウントする場合は true, 出て行く人数をカウントする場合は false
+      count_by_entering: true,
+
+      # 通過エージェント数をカウントするノード・リンクのタグ
+      # ※末端のノードは指定出来ないので注意(カウントされない)
+      counting_positions: [
+      {
+        link_tag: 'GL_R1',
+        node_tag: 'EXIT_STATION_ROOT'
+      },
+      {
+        link_tag: 'GL_R2',
+        node_tag: 'EXIT_STATION_ROOT'
+      },
+      {
+        link_tag: 'GL_R3',
+        node_tag: 'EXIT_STATION_ROOT'
+      }
+      ],
+
+      # ドアが開いてから、ホームで待機していた乗客が全員乗車を完了するまでの時間(s)
+      delay_time: 60,
+
+      # 運行表(乗車時刻, 収容人数, コメント)のファイル名
+      diagram_file: 'path_to_crowdwalk_config_dir/diagram.csv'
+
+    }"
+}

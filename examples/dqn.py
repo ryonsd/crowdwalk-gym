@@ -79,7 +79,7 @@ class Network(nn.Module):
 
         return x
 
-class DQN_Solver:
+class DQN_agent:
     def __init__(self, nS, nA):
         self.memory = ReplayBuffer()
         self.exploration_rate = EXPLORATION_MAX
@@ -129,12 +129,12 @@ class DQN_Solver:
         return self.exploration_rate
 
 
-def step(e_step):
+def step(e_step, path_to_run_dir):
     # get state
     is_step = False
     while not is_step:
         try:
-            with open("log/history.json", "r") as f:
+            with open(path_to_run_dir + "/history.json", "r") as f:
                 history = json.load(f)
             state = history[str(e_step)]["state"]
             is_step = True
@@ -145,7 +145,7 @@ def step(e_step):
     action = agent.choose_action(state)
 
     history[str(e_step)]["action"] = action
-    with open("log/history.json", "w") as f:
+    with open(path_to_run_dir + "/history.json", "w") as f:
         json.dump(history, f)
 
     # step
@@ -153,7 +153,7 @@ def step(e_step):
     is_step = False
     while not is_step:
         try:
-            with open("log/history.json", "r") as f:
+            with open(path_to_run_dir + "/history.json", "r") as f:
                 history = json.load(f)
             if not np.isnan(history[str(e_step)]["next_state"]).sum():
                 is_step = True
@@ -169,12 +169,29 @@ def step(e_step):
 
 ##########################################################################
 if __name__ == '__main__':
-    # env = gym.make("two_routes-v0")
-    env = gym.make("moji-v0")
+    import argparse
+    
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--env_name', default='two_routes')
 
-    logdir = "log/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    writer = tb.SummaryWriter(logdir=logdir)
+    args = parser.parse_args()
 
+    if args.env_name == "two_routes":
+        env_id = "two-routes-v0"
+    elif args.env_name == "moji":
+        env_id = "moji-v0"
+
+    path_to_crowdwalk_dir = "/home/nishida/CrowdWalk_nsd/crowdwalk/"
+    path_to_gym = "/home/nishida/Project/CrowdWalkGym/CrowdWalkGym/"
+    path_to_run_dir = os.getcwd() + "/run/" + args.env_name + "/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    os.makedirs(path_to_run_dir)
+
+    env = gym.make(env_id, is_gui=False)
+    env.prepare(path_to_crowdwalk_dir, path_to_gym, path_to_run_dir)
+
+    writer = tb.SummaryWriter(logdir=path_to_run_dir)
+
+    # parameters
     FC1_DIMS = 1024
     FC2_DIMS = 512
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -186,34 +203,25 @@ if __name__ == '__main__':
     GAMMA = 1.0
     EXPLORATION_MAX = 1.0
     EXPLORATION_DECAY = 0.995
-    EXPLORATION_MIN = 0.001
+    EXPLORATION_MIN = 0.01
     LOG_EPISODE = 1
     OBJ_SIZE = 2
 
-    # agent = DQN_Solver(env.nS+1, env.nA)
-    agent = DQN_Solver(env.nS, env.nA)
+    agent = DQN_agent(env.nS+1, env.nA)
 
     # train
     num_episodes = 10000
     total_steps = 0
-
-    if os.path.isfile("log/history.json"):
-        os.remove("log/history.json")
-
     for e_i in range(1, EPISODES+1):
         e_step = 0
         e_reward = np.zeros(OBJ_SIZE)
         e_loss = 0
         done = False
 
-        if os.path.isfile("log/history.json"):
-            os.remove("log/history.json")
-
         env.reset()
-
         while True:
 
-            state, action, next_state, reward, done = step(e_step)
+            state, action, next_state, reward, done = step(e_step, path_to_run_dir)
             print("step", e_step, "state", state, "action", action, "next_state", next_state, "reward", reward, "done", done)
             agent.memory.add(state, action, reward[0]/100, next_state, done)
             e_loss += agent.learn()

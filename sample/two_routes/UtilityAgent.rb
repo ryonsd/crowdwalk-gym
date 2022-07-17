@@ -53,9 +53,11 @@ class UtilityAgent < RubyAgentBase
 			@utilityBranch1Route2 = 0
 			@P = 1.0
 			
+			# @ASC = 2.230
+			@ASC = 0
 			@b_distance = -18.260
 			@b_guide = 6.346
-			# @b_guide = 100
+			
 
 		super ;
 	end
@@ -82,14 +84,6 @@ class UtilityAgent < RubyAgentBase
 		@counter += 1;
 		return super();
 	end
-		
-	#--------------------------------------------------------------
-	#++
-	## あるwayを選択した場合の目的地(_target)までのコスト。
-	## _way_:: 現在進もうとしている道
-	## _node_:: 現在の分岐点
-	## _target_:: 最終目的地
-
 
 	## message
 	Term_guide_route1 = ItkTerm.ensureTerm("guide_route1");
@@ -97,12 +91,30 @@ class UtilityAgent < RubyAgentBase
 
 	def calcCostFromNodeViaLink(link, node, target)
 		if getAgentId() then
-
+			
+			#-------------------------------------
+			# record
+				
+			# 選択した経路
+			if (link.getTags().contains("route1_2")) then
+				getAgentTags()[2] = "route1"
+			elsif (link.getTags().contains("route2_2")) then
+				getAgentTags()[2] = "route2"
+			
+			# 駅に到着した時刻
+			elsif (node.getTags().contains("check_point")) then
+				time = getCurrentTime().getAbsoluteTime() 
+				getAgentTags()[3] = time.to_s
+				getAgentTags()[4] = "arrived"
+			end
+			
+			#-------------------------------------
+			# 経路選択
 			if (hasPlaceTag('start_link')) && ( link.getTags().contains('route1_1') || link.getTags().contains('route2_1') ) then
 				# route1
 				if link.getTags().contains('route1_1') then
 
-					distance = 0 #0.39
+					distance = 0.3
 					guide = 0;
 
 					if(listenAlert(Term_guide_route1)) then
@@ -117,7 +129,7 @@ class UtilityAgent < RubyAgentBase
 				# route2
 				if link.getTags().contains('route2_1') then
 
-					distance = 0 #0.75
+					distance = 0.55
 					guide = 0;
 
 					if(listenAlert(Term_guide_route2)) then
@@ -152,10 +164,9 @@ class UtilityAgent < RubyAgentBase
 
 				return cost
 			end 
-
+			
 		
 		end
-
 
 		@counter += 1;
 		cost = super(link, node, target);

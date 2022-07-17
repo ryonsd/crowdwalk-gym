@@ -36,8 +36,9 @@
     <link id="_p00025"/>
   </Node>
   <Node height="0.0" id="_p00009" x="966.0743801652892" y="254.07438016528923">
-    <tag>goal</tag>
+    <tag>check_point</tag>
     <link id="_p00010"/>
+    <link id="_p00030"/>
   </Node>
   <Link from="_p00007" id="_p00010" length="200.0" to="_p00009" width="2.0">
     <tag>regular_link</tag>
@@ -126,8 +127,13 @@
     <tag>generation</tag>
     <link id="_p00014"/>
   </Node>
-  <Link from="_p00008" id="_p00014" length="100.0" to="_p00001" width="10.0">
+  <Link from="_p00008" id="_p00014" length="200.0" to="_p00001" width="10.0">
     <tag>generation_link</tag>
     <tag>ONE-WAY-FORWARD</tag>
   </Link>
+  <Node height="0.0" id="_p00029" x="974.5083412450083" y="254.236571743675">
+    <tag>goal</tag>
+    <link id="_p00030"/>
+  </Node>
+  <Link from="_p00009" id="_p00030" length="7.865632402459784" to="_p00029" width="2.0"/>
 </Group>

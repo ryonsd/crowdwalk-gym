@@ -7,6 +7,7 @@ import json
 import sys
 
 if __name__ == '__main__':
+    
 
     args = sys.argv
 
@@ -25,13 +26,11 @@ if __name__ == '__main__':
     elif env_name == "moji":
         env = MojiEnv()
 
-    
     gen = pd.read_csv(sim_dir + "/generation.csv")
     generation_pedestrian_number = gen[gen.step == 0]["n_ped"].values[0]
 
     init_ped_num = int(generation_pedestrian_number)
     state = list(np.append(np.array([init_ped_num]), np.zeros(env.nS)))
-    state =  list(np.zeros(env.nS))
 
     history = {}
     step = 0
@@ -42,3 +41,5 @@ if __name__ == '__main__':
     agent_dict = {}
     with open(agent_log_dir + "agent_dict.json", "w") as f:
         json.dump(agent_dict, f,  indent=2, ensure_ascii=False)
+
+    

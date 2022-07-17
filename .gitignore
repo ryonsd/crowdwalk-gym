@@ -1,9 +1,7 @@
-tests/envs/GuiSimultionLauncher.ini
 CrowdWalkGym/__pycache__/
 CrowdWalkGym/envs/__pycache__/
-CrowdWalkGym/sample/two_routes/movie/
-CrowdWalkGym/examples/GuiSimulationLauncher.ini
-CrowdWalkGym/exmaples/run/
+CrowdWalkGym/tools/__pycache__/
+examples/GuiSimulationLauncher.ini
+examples/run/
 tests/
-.gitignore
 

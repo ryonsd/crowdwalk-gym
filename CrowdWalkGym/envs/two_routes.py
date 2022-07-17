@@ -5,18 +5,17 @@ import pandas as pd
 import gym
 import os
 import json
+import sys
 
 import warnings
 warnings.simplefilter('ignore')
 
 class TwoRoutesEnv(gym.Env):
-    def __init__(self):
-        self.path_to_crowdwalk= "/home/nishida/CrowdWalk_nsd/crowdwalk/" # <<<<<<<<<<<<<<<<<<
-        self.prop_file = self.path_to_crowdwalk + "sample/two_routes/properties.json"
-        self.is_gui = False
+    def __init__(self, is_gui=False):
+        self.is_gui = is_gui
 
         self.nS = 13
-        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(13,))
+        self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(14,))
         
         self.nA = 2
         self.action_space = gym.spaces.Discrete(2)
@@ -43,12 +42,27 @@ class TwoRoutesEnv(gym.Env):
         self.route1_length = 0.4
         self.route2_length = 0.7
 
+    def prepare(self, path_to_crowdwalk_dir, path_to_gym, path_to_run_dir):
+        sys.path.append(path_to_gym)
+        from tools import create_properties_file
+
+        self.path_to_crowdwalk_dir = path_to_crowdwalk_dir
+        path_to_crowdwalk_config_dir = path_to_crowdwalk_dir + "sample/two_routes/"
+        self.path_to_run_dir = path_to_run_dir
+        self.prop_file = path_to_run_dir + "/properties.json"
+
+        create_properties_file.do(path_to_crowdwalk_config_dir, path_to_gym, path_to_run_dir)
+
     def reset(self):
+        if os.path.isfile(self.path_to_run_dir + "/history.json"):
+            os.remove(self.path_to_run_dir + "/history.json")
+
         if self.is_gui:
-            # subprocess.Popen(["sh", self.path_to_crowdwalk+"quickstart.sh", self.prop_file, "-lError"], stderr=subprocess.DEVNULL)
-            subprocess.Popen(["sh", self.path_to_crowdwalk+"quickstart.sh", self.prop_file, "-lError"])
+            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"], stderr=subprocess.DEVNULL)
+            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"])
         else:
-            subprocess.Popen(["sh", self.path_to_crowdwalk+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
+            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
+            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
         return np.zeros(self.nS)
 
     def step(self):

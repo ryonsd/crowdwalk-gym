@@ -22,6 +22,7 @@ class GateOperation < CrowdWalkWrapper
     @simulator = simulator
     @dummy_event = CloseGateEvent.new
     @step = 0
+    @sim_step = 0
   end
 
   #--------------------------------------------------------------
@@ -68,6 +69,15 @@ class GateOperation < CrowdWalkWrapper
     fl = []
     @networkMap.eachLink() {|link| fl << link if link.hasTag("start_link")}
     @fl1 = fl.first
+    
+    command = "python " + $settings[:path_to_gym] + "tools/initialize.py" +
+    " " + $settings[:path_to_gym] +
+    " " + $settings[:env] +
+    " " + $settings[:path_to_agent_log] +
+    " " + $settings[:path_to_crowdwalk_config_dir]
+    
+
+    o, e, s = Open3.capture3(command) # output, error, status
 
   end
 
@@ -75,6 +85,20 @@ class GateOperation < CrowdWalkWrapper
   #++
   ## postprocessing of simulation
   def finalizeSimulation()
+    sim_previous_step = (@step) * $settings[:step_duration]
+    sim_final_step = @sim_step
+
+    command = "python " + $settings[:path_to_gym] + "tools/finalize.py" +
+    " " + $settings[:path_to_gym] +
+    " " + $settings[:env] +
+    " " + @step.to_s + 
+    " " + sim_previous_step.to_s +
+    " " + sim_final_step.to_s +
+    " " + $settings[:path_to_crowdwalk_config_dir] +
+    " " + $settings[:path_to_agent_log]
+
+    o, e, s = Open3.capture3(command) # output, error, status
+
   end
 
   #--------------------------------------------------------------
@@ -85,22 +109,24 @@ class GateOperation < CrowdWalkWrapper
     absoluteTime = simTime.getAbsoluteTime().to_i
     
     # action selection
-    if (absoluteTime-1) % $settings[:step_duration] == 0 and absoluteTime >= $settings[:step_duration]
+    if (absoluteTime-1) % $settings[:step_duration] == 0
       # p absoluteTime
-
-      # get state and reward
-      command = "python " + $settings[:path_to_gym_envs] + "get_state_reward.py " + $settings[:env] + " " + $settings[:step_duration].to_s +  " " + (absoluteTime-1).to_s  + " " + Dir.getwd
-
-      o, e, s = Open3.capture3(command) # output, error, status
-      history = File.open("log/history.json") do |f|
-        JSON.load(f)
+      
+      # set guide to simulation
+      is_step = false
+      while !is_step do
+        history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+          JSON.load(f)
+        end
+        begin
+          if !history[@step.to_s]["action"].to_f.nan? 
+            is_step = true
+          end
+        rescue 
+          p "transition is not added yet"
+        end
       end
-
-      state = history["state"]
-      reward = history["reward"]
-
-      # select action and set guide to simulation
-      action = action_selection(@step)
+      action = history[@step.to_s]["action"]
 
       if action == 0    
         term_1 = ItkTerm.newTerm("guide_route1")
@@ -114,35 +140,43 @@ class GateOperation < CrowdWalkWrapper
         @fl1.addAlertMessage(term_2, simTime, true)
       end
 
-      @step += 1
     end
 
-    # 通過エージェント数のカウント
-    count_of_position = 0
-    count_of_passing = 0
-    count_of_standby = 0
+    @sim_step += 1
 
   end
 
-
-  def action_selection(step)
-    
-
-
-    if step % 2 == 0
-      action = 0
-    else
-      action = 1
-    end 
-
-    return action
-  end
 
   #--------------------------------------------------------------
   #++
   ## update の最後に呼び出される。
   ## _relTime_:: シミュレーション内相対時刻
   def postUpdate(simTime)
+    absoluteTime = simTime.getAbsoluteTime().to_i
+    if absoluteTime % $settings[:step_duration] == 0 and absoluteTime >= $settings[:step_duration]
+      # print [@step, "get_state_reward"]
+      get_state_reward(absoluteTime)
+    end
+  end
+
+  #--------------------------------------------------------------
+  #++
+  ## get state and reward
+  def get_state_reward(absoluteTime)
+
+    command = "python " + $settings[:path_to_gym] + "tools/get_state_reward.py" +
+    " " + $settings[:path_to_gym] +
+    " " + $settings[:env] +
+    " " + @step.to_s +
+    " " + $settings[:step_duration].to_s +
+    " " + absoluteTime.to_s +
+    " " + $settings[:path_to_crowdwalk_config_dir] +
+    " " + $settings[:path_to_agent_log]
+
+    o, e, s = Open3.capture3(command) # output, error, status
+
+    @step += 1
+    # puts "step"
   end
 
   def time_to_int(time_str)

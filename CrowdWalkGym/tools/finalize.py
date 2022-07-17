@@ -37,8 +37,8 @@ def get_reward(env, log, step_s, step_e, log_dir, sample_t = 30, n_obj=1):
         congestion_degree += sum(link_attribute["density"] > 0.71) #.astype(int)
 
     # travel distance
-    if os.path.exists(log_dir + "agent_dict.json"):
-        with open(log_dir + "agent_dict.json", "r") as f:
+    if os.path.exists(log_dir + "/agent_dict.json"):
+        with open(log_dir + "/agent_dict.json", "r") as f:
             agent_dict = json.load(f)
     else:
         agent_dict = {}
@@ -67,7 +67,7 @@ def get_reward(env, log, step_s, step_e, log_dir, sample_t = 30, n_obj=1):
             agent_dict[agent_id] = {"state": "arrived", "route":route, "travel_distance": distance}
 
     # print(len(agent_dict))
-    with open(log_dir + "agent_dict.json", "w") as f:
+    with open(log_dir + "/agent_dict.json", "w") as f:
         json.dump(agent_dict, f,  indent=2, ensure_ascii=False)
 
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     step = int(args[3])
     sim_previous_step = int(args[4])
     sim_final_step = int(args[5])
-    sim_log_dir = args[6] + "/log/"
+    sim_log_dir = args[6] 
     agent_log_dir = args[7]
 
     import sys
@@ -105,16 +105,16 @@ if __name__ == '__main__':
     elif env_name == "moji":
         env = MojiEnv()
 
-    log = pd.read_csv(sim_log_dir + "log_individual_pedestrians.csv")
+    log = pd.read_csv(agent_log_dir+ "/log_individual_pedestrians.csv")
 
     reward, done = get_reward(env, log, sim_previous_step, sim_final_step, agent_log_dir, n_obj=2)
 
-    with open(agent_log_dir + "history.json", "r") as f:
+    with open(agent_log_dir + "/history.json", "r") as f:
         history = json.load(f)
 
     history[str(step)]["reward"] = reward
-    history[str(step)]["next_state"] = list(np.zeros(env.nS))
+    history[str(step)]["next_state"] = list(np.zeros(env.nS+1))
     history[str(step)]["done"] = done
 
-    with open(agent_log_dir + "history.json", "w") as f:
+    with open(agent_log_dir + "/history.json", "w") as f:
         json.dump(history, f, indent=2)

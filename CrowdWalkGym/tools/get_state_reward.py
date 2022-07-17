@@ -46,8 +46,8 @@ def get_state_reward(env, log, step_duration, step, log_dir, sample_t = 30, n_ob
         congestion_degree += sum(link_attribute["density"] > 0.71) #.astype(int)
 
     # travel distance
-    if os.path.exists(log_dir + "agent_dict.json"):
-        with open(log_dir + "agent_dict.json", "r") as f:
+    if os.path.exists(log_dir + "/agent_dict.json"):
+        with open(log_dir + "/agent_dict.json", "r") as f:
             agent_dict = json.load(f)
     else:
         agent_dict = {}
@@ -59,6 +59,7 @@ def get_state_reward(env, log, step_duration, step, log_dir, sample_t = 30, n_ob
         # if the agent has arrived
         route = np.nan 
         distance = np.nan
+        
         if agent_log[i][-1] == "arrived":
             
             agent_id = agent_log[i][0]
@@ -76,7 +77,7 @@ def get_state_reward(env, log, step_duration, step, log_dir, sample_t = 30, n_ob
             agent_dict[agent_id] = {"state": "arrived", "route":route, "travel_distance": distance}
 
     # print(len(agent_dict))
-    with open(log_dir + "agent_dict.json", "w") as f:
+    with open(log_dir + "/agent_dict.json", "w") as f:
         json.dump(agent_dict, f,  indent=2, ensure_ascii=False)
 
 
@@ -114,17 +115,17 @@ if __name__ == '__main__':
     elif env_name == "moji":
         env = MojiEnv()
 
-    log = pd.read_csv(sim_dir + "/log/log_individual_pedestrians.csv")
+    log = pd.read_csv(agent_log_dir + "/log_individual_pedestrians.csv")
     next_state_, reward, done = get_state_reward(env, log, step_duration, sim_step, agent_log_dir, n_obj=2)
 
     gen = pd.read_csv(sim_dir + "/generation.csv")
     next_generation_pedestrian_number = gen[gen.step == (step+1)]["n_ped"].values[0]
 
-    # next_state = [int(next_generation_pedestrian_number)]
-    # next_state.extend(next_state_)
-    next_state = next_state_
+    next_state = [int(next_generation_pedestrian_number)]
+    next_state.extend(next_state_)
+    
 
-    with open(agent_log_dir + "history.json", "r") as f:
+    with open(agent_log_dir + "/history.json", "r") as f:
         history = json.load(f)
 
     history[str(step)]["reward"] = reward
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     history[str(step)]["done"] = done
     history[str(step+1)] = {"sim_step": sim_step, "state": next_state, "action": np.nan, "reward": np.nan, "next_state": np.nan, "done": np.nan}
 
-    with open(agent_log_dir + "history.json", "w") as f:
+    with open(agent_log_dir + "/history.json", "w") as f:
         json.dump(history, f, indent=2)
 
 

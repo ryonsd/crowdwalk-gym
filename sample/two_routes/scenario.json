@@ -15,5 +15,9 @@
         "type": "Alert",
         "placeTag": "start_link",
         "message": "guide_route1"
+      },
+      {
+        "atTime": "00:50:00",
+        "type": "Finish"
       }
 ]

@@ -1,0 +1,10 @@
+[
+    {
+      "atTime": "20:00:00",
+      "type": "Initiate"
+    },
+    {
+      "atTime": "24:00:00",
+      "type": "Finish"
+    }
+]

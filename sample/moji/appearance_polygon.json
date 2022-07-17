@@ -1,0 +1,16 @@
+[
+    {
+        "tag" : "SEASHORE",
+        "color" : {
+            "value" : "BLUE",
+            "transparency" : 0.5
+        }
+    },
+    {
+        "tag" : "building_1",
+        "color" : {
+            "value" : "BLACK",
+            "transparency" : 0.40
+        }
+    }
+]
