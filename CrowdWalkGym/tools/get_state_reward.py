@@ -7,7 +7,7 @@ import json
 import sys
 
 
-def get_state_reward(env, log, step_duration, step, log_dir, sample_t = 30, n_obj=1):
+def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 30):
 
     # リンク上の各時刻の歩行者数および密度
     link_dict = {} # length, width, density of each link
@@ -84,7 +84,7 @@ def get_state_reward(env, log, step_duration, step, log_dir, sample_t = 30, n_ob
     # reward
     if n_obj == 1:
         reward = -int(congestion_degree)
-    else:
+    elif n_obj == 2:
         reward = [-int(congestion_degree), -float(travel_distance)]
 
     done = False
@@ -104,19 +104,22 @@ if __name__ == '__main__':
     sim_step = int(args[5])
     sim_dir = args[6] 
     agent_log_dir = args[7]
+    n_obj = int(args[8])
 
     import sys
     sys.path.append((path_to_gym+"envs/"))
     from two_routes import TwoRoutesEnv
-    from moji import MojiEnv
+    from moji import MojiEnv, MojiSmallEnv
 
     if env_name == "two_routes":
         env = TwoRoutesEnv()
     elif env_name == "moji":
         env = MojiEnv()
+    elif env_name == "moji_small":
+        env = MojiSmallEnv()
 
     log = pd.read_csv(agent_log_dir + "/log_individual_pedestrians.csv")
-    next_state_, reward, done = get_state_reward(env, log, step_duration, sim_step, agent_log_dir, n_obj=2)
+    next_state_, reward, done = get_state_reward(env, log, step_duration, sim_step, agent_log_dir, n_obj)
 
     gen = pd.read_csv(sim_dir + "/generation.csv")
     next_generation_pedestrian_number = gen[gen.step == (step+1)]["n_ped"].values[0]

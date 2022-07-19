@@ -42,7 +42,7 @@ class TwoRoutesEnv(gym.Env):
         self.route1_length = 0.4
         self.route2_length = 0.7
 
-    def prepare(self, path_to_crowdwalk_dir, path_to_gym, path_to_run_dir):
+    def prepare(self, path_to_crowdwalk_dir, path_to_gym, path_to_run_dir, n_obj):
         sys.path.append(path_to_gym)
         from tools import create_properties_file
 
@@ -51,7 +51,7 @@ class TwoRoutesEnv(gym.Env):
         self.path_to_run_dir = path_to_run_dir
         self.prop_file = path_to_run_dir + "/properties.json"
 
-        create_properties_file.do(path_to_crowdwalk_config_dir, path_to_gym, path_to_run_dir)
+        create_properties_file.do(path_to_crowdwalk_config_dir, path_to_gym, path_to_run_dir, n_obj)
 
     def reset(self):
         if os.path.isfile(self.path_to_run_dir + "/history.json"):

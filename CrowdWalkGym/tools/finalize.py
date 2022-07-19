@@ -6,7 +6,7 @@ import os
 import json
 import sys
 
-def get_reward(env, log, step_s, step_e, log_dir, sample_t = 30, n_obj=1):
+def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
     link_dict = {} # length, width, density of each link
 
     step_duration = step_e - step_s
@@ -74,7 +74,7 @@ def get_reward(env, log, step_s, step_e, log_dir, sample_t = 30, n_obj=1):
     # reward
     if n_obj == 1:
         reward = -int(congestion_degree)
-    else:
+    elif n_obj == 2:
         reward = [-int(congestion_degree), -float(travel_distance)]
 
     done = True
@@ -94,20 +94,23 @@ if __name__ == '__main__':
     sim_final_step = int(args[5])
     sim_log_dir = args[6] 
     agent_log_dir = args[7]
+    n_obj = int(args[8])
 
     import sys
     sys.path.append((path_to_gym+"envs/"))
     from two_routes import TwoRoutesEnv
-    from moji import MojiEnv
+    from moji import MojiEnv, MojiSmallEnv
 
     if env_name == "two_routes":
         env = TwoRoutesEnv()
     elif env_name == "moji":
         env = MojiEnv()
+    elif env_name == "moji_small":
+        env = MojiSmallEnv()
 
     log = pd.read_csv(agent_log_dir+ "/log_individual_pedestrians.csv")
 
-    reward, done = get_reward(env, log, sim_previous_step, sim_final_step, agent_log_dir, n_obj=2)
+    reward, done = get_reward(env, log, sim_previous_step, sim_final_step, agent_log_dir, n_obj)
 
     with open(agent_log_dir + "/history.json", "r") as f:
         history = json.load(f)

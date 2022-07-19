@@ -19,12 +19,14 @@ if __name__ == '__main__':
     import sys
     sys.path.append((path_to_gym+"envs/"))
     from two_routes import TwoRoutesEnv
-    from moji import MojiEnv
+    from moji import MojiEnv, MojiSmallEnv
 
     if env_name == "two_routes":
         env = TwoRoutesEnv()
     elif env_name == "moji":
         env = MojiEnv()
+    elif env_name == "moji_small":
+        env = MojiSmallEnv()
 
     gen = pd.read_csv(sim_dir + "/generation.csv")
     generation_pedestrian_number = gen[gen.step == 0]["n_ped"].values[0]

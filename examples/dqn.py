@@ -180,6 +180,8 @@ if __name__ == '__main__':
         env_id = "two-routes-v0"
     elif args.env_name == "moji":
         env_id = "moji-v0"
+    elif args.env_name == "moji_small":
+        env_id = "moji-v1"
 
     path_to_crowdwalk_dir = "/home/nishida/CrowdWalk_nsd/crowdwalk/"
     path_to_gym = "/home/nishida/Project/CrowdWalkGym/CrowdWalkGym/"
@@ -187,7 +189,7 @@ if __name__ == '__main__':
     os.makedirs(path_to_run_dir)
 
     env = gym.make(env_id, is_gui=False)
-    env.prepare(path_to_crowdwalk_dir, path_to_gym, path_to_run_dir)
+    env.prepare(path_to_crowdwalk_dir, path_to_gym, path_to_run_dir, n_obj=1)
 
     writer = tb.SummaryWriter(logdir=path_to_run_dir)
 
@@ -202,10 +204,10 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
     GAMMA = 1.0
     EXPLORATION_MAX = 1.0
-    EXPLORATION_DECAY = 0.995
+    EXPLORATION_DECAY = 0.996
     EXPLORATION_MIN = 0.01
     LOG_EPISODE = 1
-    OBJ_SIZE = 2
+    OBJ_SIZE = 1
 
     agent = DQN_agent(env.nS+1, env.nA)
 
@@ -223,7 +225,7 @@ if __name__ == '__main__':
 
             state, action, next_state, reward, done = step(e_step, path_to_run_dir)
             print("step", e_step, "state", state, "action", action, "next_state", next_state, "reward", reward, "done", done)
-            agent.memory.add(state, action, reward[0]/100, next_state, done)
+            agent.memory.add(state, action, reward/100, next_state, done)
             e_loss += agent.learn()
 
             e_step += 1

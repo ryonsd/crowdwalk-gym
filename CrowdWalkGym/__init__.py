@@ -9,3 +9,8 @@ register(
     id="moji-v0",
     entry_point="CrowdWalkGym.envs.moji:MojiEnv"
 )
+
+register(
+    id="moji-v1",
+    entry_point="CrowdWalkGym.envs.moji:MojiSmallEnv"
+)

@@ -35,3 +35,5 @@ for i, r in enumerate(gen_each):
     gen_each_id.append(agent)
 with open(output_file_path, "w") as f:
     json.dump(gen_each_id, f,  indent=2, ensure_ascii=False)
+
+# add #{ "version" : 2}
