@@ -22,6 +22,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.transforms as T
+from timm.scheduler import CosineLRScheduler
 
 import tensorboardX as tb
 
@@ -68,7 +69,9 @@ class Network(nn.Module):
         self.fc2 = nn.Linear(FC1_DIMS, FC2_DIMS)
         self.fc3 = nn.Linear(FC2_DIMS, output_shape)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=LEARNING_RATE)
+        self.optimizer = optim.Adam(self.parameters())#, lr=LEARNING_RATE)
+        self.scheduler = CosineLRScheduler(self.optimizer, t_initial=4000, lr_min=1e-7, 
+                                  warmup_t=500, warmup_lr_init=5e-5, warmup_prefix=True)
         self.loss = nn.MSELoss()
         self.to(DEVICE)
     
@@ -95,7 +98,7 @@ class DQN_agent:
         q_values = self.network(state)
         return torch.argmax(q_values).item()
     
-    def learn(self):
+    def learn(self, t):
         if self.memory.mem_count < BATCH_SIZE:
             return 0
         
@@ -119,6 +122,7 @@ class DQN_agent:
         self.network.optimizer.zero_grad()
         loss.backward()
         self.network.optimizer.step()
+        self.network.scheduler.step(t+1)
 
         self.exploration_rate *= EXPLORATION_DECAY
         self.exploration_rate = max(EXPLORATION_MIN, self.exploration_rate)
@@ -198,13 +202,13 @@ if __name__ == '__main__':
     FC2_DIMS = 512
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    EPISODES = 1000
-    LEARNING_RATE = 0.00001 
+    EPISODES = 10000
+    # LEARNING_RATE = 0.000005 #5e-6
     MEM_SIZE = 10000
     BATCH_SIZE = 32
     GAMMA = 1.0
     EXPLORATION_MAX = 1.0
-    EXPLORATION_DECAY = 0.996
+    EXPLORATION_DECAY = 0.999
     EXPLORATION_MIN = 0.01
     LOG_EPISODE = 1
     OBJ_SIZE = 1
@@ -212,7 +216,6 @@ if __name__ == '__main__':
     agent = DQN_agent(env.nS+1, env.nA)
 
     # train
-    num_episodes = 10000
     total_steps = 0
     for e_i in range(1, EPISODES+1):
         e_step = 0
@@ -226,7 +229,7 @@ if __name__ == '__main__':
             state, action, next_state, reward, done = step(e_step, path_to_run_dir)
             print("step", e_step, "state", state, "action", action, "next_state", next_state, "reward", reward, "done", done)
             agent.memory.add(state, action, reward/100, next_state, done)
-            e_loss += agent.learn()
+            e_loss += agent.learn(total_steps)
 
             e_step += 1
             e_reward += np.array(reward)
@@ -238,10 +241,13 @@ if __name__ == '__main__':
                 break
 
         if e_i % LOG_EPISODE == 0:
+            writer.add_scalar('lr', agent.network.scheduler.get_epoch_values(total_steps), e_i)
             writer.add_scalar('epsilon', agent.returning_epsilon(), e_i)
             writer.add_scalar('loss', e_loss / e_step, e_i)
             for i in range(OBJ_SIZE):
                 writer.add_scalar('reward_'+str(i), e_reward[i], e_i)
+
+            
 
         
             
