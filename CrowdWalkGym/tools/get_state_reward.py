@@ -38,6 +38,8 @@ def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 3
                         link_attribute["density"][t] += 1 / (link_attribute["length"]* link_attribute["width"])
                         if t == T-1:
                             next_state_dict[link_name] += 1
+
+    # print(link_dict["route1_6"])
     next_state = list(next_state_dict.values())
 
     # congestion_degree

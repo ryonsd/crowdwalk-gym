@@ -10,7 +10,11 @@ CrowdWalk, a multi-agent pedestrian flow simulator, is used for representing cro
 | Two routes | Real map (moji port) |
 
 # Examples
-The result of learning route guidance with DQN that minimizes congestion degree in Two routes environment.
+The result of learning route guidance with DQN that minimizes congestion degree in "two_routes" and "moji" environment.
 
-![result](images/result_two_routes.png)
+| ![result](images/result_two_routes.png)          | ![result](images/result_moji.png) |
+| ----------------------------------------- | ------------------------------------- |
+| Two routes | Real map (moji port) |
+
+
 

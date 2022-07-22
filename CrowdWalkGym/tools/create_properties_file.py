@@ -26,6 +26,8 @@ def do(path_to_crowdwalk_config_dir, path_to_gym, path_to_run_dir, n_obj):
         prop["polygon_appearance_file"] = prop["polygon_appearance_file"].replace("path_to_crowdwalk_config_dir/", path_to_crowdwalk_config_dir)
     if "camera_2d_file" in prop:
         prop["camera_2d_file"] = prop["camera_2d_file"].replace("path_to_crowdwalk_config_dir/", path_to_crowdwalk_config_dir)
+    if "camera_file" in prop:
+        prop["camera_file"] = prop["camera_file"].replace("path_to_crowdwalk_config_dir/", path_to_crowdwalk_config_dir)
 
     with open(path_to_run_dir + "/properties.json", "w") as f:
         json.dump(prop, f, ensure_ascii=False, indent=4)

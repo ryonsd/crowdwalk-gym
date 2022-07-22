@@ -12,15 +12,16 @@ args = sys.argv
 csv_file_path = args[1]
 output_file_path = args[2]
 start_datetime = args[3]
+step_duration = args[4]
 data = pd.read_csv(csv_file_path)
 data_num = list(data["n_ped"])
 
 
 gen = []
 for t, p in enumerate(data_num):
-    time_base = datetime.datetime.strptime(start_datetime, '%H:%M:%S') + datetime.timedelta(seconds=t*30)
+    time_base = datetime.datetime.strptime(start_datetime, '%H:%M:%S') + datetime.timedelta(seconds=t*step_duration)
     for i in range(p):
-        time = time_base + datetime.timedelta(seconds=np.random.randint(0, 30))
+        time = time_base + datetime.timedelta(seconds=np.random.randint(0, step_duration))
         time = datetime.datetime.strftime(time, '%H:%M:%S')
         agent = {"rule": "EACH", "agentType": {"className": "RubyAgent", "rubyAgentClass": "UtilityAgent"},
                 "startTime": time, "total": 1, "duration": 1, "startPlace": "generation_link", 
