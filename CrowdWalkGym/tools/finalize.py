@@ -57,10 +57,12 @@ def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
 
             if route_ == "route1":
                 route = 1
-                distance = env.route1_length
+#                 distance = 1. - env.route1_length - 0.3 # two-routes: 1-0.4-0.3 = 0.3
+                distance = 1. - env.route1_length - 0.45 # moji: 1-0.3-0.45=0.25
             elif route_ == "route2":
                 route = 2
-                distance = env.route2_length
+#                 distance = 1. - env.route2_length - 0.3 # two-routes: 1-0.7-0.3 = 0
+                distance = 1. - env.route2_length - 0.45 # moji: 1-0.55-0.45 = 0
 
             if agent_id not in agent_dict:
                 travel_distance += distance
@@ -75,7 +77,8 @@ def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
     if n_obj == 1:
         reward = -int(congestion_degree)
     elif n_obj == 2:
-        reward = [-int(congestion_degree), -float(travel_distance)]
+        # reward = [-int(congestion_degree), -float(travel_distance)]
+        reward = [float(travel_distance), -int(congestion_degree)]
 
     done = True
 

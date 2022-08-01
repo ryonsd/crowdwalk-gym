@@ -21,7 +21,7 @@ class TwoRoutesEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(2)
 
         self.link = {
-            "start_link": {"id": "_p00011" ,"length": 100,  "width": 2},
+            "start_link": {"id": "_p00011" ,"length": 100,  "width": 4},
 
             "route1_1": {"id": "_p00004" ,"length": 100,  "width": 2},
             "route1_2": {"id": "_p00006" ,"length": 100,  "width": 2},
@@ -36,7 +36,7 @@ class TwoRoutesEnv(gym.Env):
             "route2_6": {"id": "_p00020" ,"length": 100,  "width": 2},
             "route2_7": {"id": "_p00022" ,"length": 100,  "width": 2},
 
-            "goal_link": {"id": "_p00010" ,"length": 200,  "width": 2},
+            "goal_link": {"id": "_p00010" ,"length": 200,  "width": 4},
         }
 
         self.route1_length = 0.4
@@ -61,8 +61,8 @@ class TwoRoutesEnv(gym.Env):
             subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"], stderr=subprocess.DEVNULL)
             # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"])
         else:
-            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
-            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
+            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
+            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
         return np.zeros(self.nS)
 
     def step(self):

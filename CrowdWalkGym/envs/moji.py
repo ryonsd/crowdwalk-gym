@@ -70,8 +70,8 @@ class MojiEnv(gym.Env):
             # subprocess.Popen(["sh", self.path_to_crowdwalk+"quickstart.sh", self.prop_file, "-lError"], stderr=subprocess.DEVNULL)
             subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"])
         else:
-            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
-            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
+            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
+            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
         return np.zeros(self.nS)
 
     def step(self):

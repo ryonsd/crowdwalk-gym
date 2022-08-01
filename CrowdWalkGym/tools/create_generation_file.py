@@ -12,7 +12,7 @@ args = sys.argv
 csv_file_path = args[1]
 output_file_path = args[2]
 start_datetime = args[3]
-step_duration = args[4]
+step_duration = int(args[4])
 data = pd.read_csv(csv_file_path)
 data_num = list(data["n_ped"])
 
