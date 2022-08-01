@@ -1,10 +1,4 @@
 {
-    generation_link: {
-        width_fixed: true,
-        width_ratio: 2.0,
-        color: 'BLACK',
-        transparency: 0.0
-    },
     start_link: {
         width_fixed: false,
         width_ratio: 1.0,

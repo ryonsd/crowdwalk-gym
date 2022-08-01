@@ -33,6 +33,7 @@
       # 
       step_duration: 300,
       env: 'two_routes',
+      n_obj: 'n_obj_',
       path_to_crowdwalk_config_dir: 'path_to_crowdwalk_config_dir/',
       path_to_gym: 'path_to_gym_',
       path_to_agent_log: 'path_to_run_dir/',

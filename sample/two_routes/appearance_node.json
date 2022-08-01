@@ -1,5 +1,5 @@
 {
-    generation: {
+    start: {
         diameter: 15.0,
         color: 'BLACK',
         transparency: 0.0

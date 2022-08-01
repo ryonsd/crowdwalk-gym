@@ -13,8 +13,6 @@
 
 require "date" ;
 require 'RubyAgentBase.rb' ;
-require 'GateOperation' ;
-
 #--======================================================================
 #++
 ## SampleAgent class
@@ -55,8 +53,10 @@ class UtilityAgent < RubyAgentBase
 			
 			# @ASC = 2.230
 			@ASC = 0
-			@b_distance = -18.260
-			@b_guide = 6.346
+			# @b_distance = -18.260
+			# @b_guide = 6.346
+			@b_distance = 0
+			@b_guide = 100
 			
 
 		super ;
@@ -114,7 +114,7 @@ class UtilityAgent < RubyAgentBase
 				# route1
 				if link.getTags().contains('route1_1') then
 
-					distance = 0.3
+					distance = 0.4
 					guide = 0;
 
 					if(listenAlert(Term_guide_route1)) then
@@ -129,7 +129,7 @@ class UtilityAgent < RubyAgentBase
 				# route2
 				if link.getTags().contains('route2_1') then
 
-					distance = 0.55
+					distance = 0.7
 					guide = 0;
 
 					if(listenAlert(Term_guide_route2)) then

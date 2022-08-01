@@ -95,7 +95,8 @@ class GateOperation < CrowdWalkWrapper
     " " + sim_previous_step.to_s +
     " " + sim_final_step.to_s +
     " " + $settings[:path_to_crowdwalk_config_dir] +
-    " " + $settings[:path_to_agent_log]
+    " " + $settings[:path_to_agent_log] +
+    " " + $settings[:n_obj]
 
     o, e, s = Open3.capture3(command) # output, error, status
 
@@ -120,13 +121,18 @@ class GateOperation < CrowdWalkWrapper
         end
         begin
           if !history[@step.to_s]["action"].to_f.nan? 
+            action = history[@step.to_s]["action"]
             is_step = true
           end
         rescue 
-          p "transition is not added yet"
+          # p "transition is not added yet"
+          @step -= 1
+          get_state_reward(absoluteTime-1)
+          action = 0
+          is_step = true
         end
       end
-      action = history[@step.to_s]["action"]
+      
 
       if action == 0    
         term_1 = ItkTerm.newTerm("guide_route1")
@@ -171,7 +177,8 @@ class GateOperation < CrowdWalkWrapper
     " " + $settings[:step_duration].to_s +
     " " + absoluteTime.to_s +
     " " + $settings[:path_to_crowdwalk_config_dir] +
-    " " + $settings[:path_to_agent_log]
+    " " + $settings[:path_to_agent_log] +
+    " " + $settings[:n_obj]
 
     o, e, s = Open3.capture3(command) # output, error, status
 

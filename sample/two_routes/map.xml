@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Group defaultHeight="0.0" id="_p00000" imageFileName="" maxHeight="5.0" minHeight="-5.0" pNorthWestX="5.0" pNorthWestY="45.0" pSouthEastX="600.0" pSouthEastY="600.0" pTheta="0.0" r="0.0" scale="1.0" sx="1.0" sy="1.0" tx="0.0" ty="0.0" zone="0">
   <tag>root</tag>
-  <Node height="0.0" id="_p00001" x="319.0" y="250.0">
+  <Node height="0.0" id="_p00001" x="268.0" y="252.0">
     <tag>start</tag>
     <link id="_p00011"/>
-    <link id="_p00014"/>
   </Node>
   <Node height="0.0" id="_p00002" x="411.0" y="250.0">
     <tag>junction</tag>
@@ -35,17 +34,17 @@
     <link id="_p00022"/>
     <link id="_p00025"/>
   </Node>
-  <Node height="0.0" id="_p00009" x="966.0743801652892" y="254.07438016528923">
+  <Node height="0.0" id="_p00009" x="891.0" y="255.0">
     <tag>check_point</tag>
     <link id="_p00010"/>
     <link id="_p00030"/>
   </Node>
-  <Link from="_p00007" id="_p00010" length="200.0" to="_p00009" width="2.0">
+  <Link from="_p00007" id="_p00010" length="200.0" to="_p00009" width="4.0">
     <tag>regular_link</tag>
     <tag>goal_link</tag>
     <tag>ONE-WAY-FORWARD</tag>
   </Link>
-  <Link from="_p00002" id="_p00011" length="100.0" to="_p00001" width="2.0">
+  <Link from="_p00002" id="_p00011" length="100.0" to="_p00001" width="4.0">
     <tag>start_link</tag>
     <tag>ONE-WAY-BACKWARD</tag>
   </Link>
@@ -123,17 +122,9 @@
     <tag>ONE-WAY-BACKWARD</tag>
     <tag>route2_2</tag>
   </Link>
-  <Node height="0.0" id="_p00008" x="225.0" y="251.0">
-    <tag>generation</tag>
-    <link id="_p00014"/>
-  </Node>
-  <Link from="_p00008" id="_p00014" length="200.0" to="_p00001" width="10.0">
-    <tag>generation_link</tag>
-    <tag>ONE-WAY-FORWARD</tag>
-  </Link>
-  <Node height="0.0" id="_p00029" x="974.5083412450083" y="254.236571743675">
+  <Node height="0.0" id="_p00029" x="893.9152692422999" y="254.93014197288923">
     <tag>goal</tag>
     <link id="_p00030"/>
   </Node>
-  <Link from="_p00009" id="_p00030" length="7.865632402459784" to="_p00029" width="2.0"/>
+  <Link from="_p00009" id="_p00030" length="7.865632402459784" to="_p00029" width="4.0"/>
 </Group>
