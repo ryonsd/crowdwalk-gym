@@ -5,7 +5,6 @@ import json
 import datetime
 import numpy as np
 import pandas as pd
-import datetime
 format = '%Y:%m:%d-%H:%M:%S:%f'
 
 args = sys.argv

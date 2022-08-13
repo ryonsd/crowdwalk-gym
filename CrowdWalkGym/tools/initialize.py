@@ -32,7 +32,7 @@ if __name__ == '__main__':
     generation_pedestrian_number = gen[gen.step == 0]["n_ped"].values[0]
 
     init_ped_num = int(generation_pedestrian_number)
-    state = list(np.append(np.array([init_ped_num]), np.zeros(env.nS)))
+    state = list(np.append(np.array([0, init_ped_num]), np.zeros(env.nS)))
 
     history = {}
     step = 0

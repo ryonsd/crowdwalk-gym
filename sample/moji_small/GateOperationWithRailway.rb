@@ -168,24 +168,32 @@ class GateOperationWithRailway < CrowdWalkWrapper
       # p absoluteTime
       
       # set guide to simulation
-      is_step = false
-      while !is_step do
-        history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
-          JSON.load(f)
-        end
-        begin
-          if !history[@step.to_s]["action"].to_f.nan? 
-            action = history[@step.to_s]["action"]
-            is_step = true
-          end
-        rescue 
-          p "transition is not added yet"
-          @step -= 1
-          get_state_reward(relativeTime-1)
-          action = 0
-          is_step = true
-        end
+      # is_step = false
+      # while !is_step do
+      #   history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+      #     JSON.load(f)
+      #   end
+      #   begin
+      #     if !history[@step.to_s]["action"].to_f.nan? 
+      #       action = history[@step.to_s]["action"]
+      #       is_step = true
+      #     end
+      #   rescue 
+      #     p "transition is not added yet"
+      #     @step -= 1
+      #     get_state_reward(relativeTime-1)
+      #     action = 0
+      #     is_step = true
+      #   end
+      # end
+
+      check_action_selected(relativeTime)
+      history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+        JSON.load(f)
       end
+      action = history[@step.to_s]["action"]
+      # print "do ", action, "\n"
+
 
       if action == 0    
         term_1 = ItkTerm.newTerm("guide_route1")
@@ -204,6 +212,17 @@ class GateOperationWithRailway < CrowdWalkWrapper
     @sim_step += 1
 
 
+  end
+
+  #--------------------------------------------------------------
+  #++
+  ## 
+  def check_action_selected(simTime)
+    command = "python " + $settings[:path_to_gym] + "tools/check_action_selected.py" +
+    " " + @step.to_s +
+    " " + $settings[:path_to_agent_log]
+
+    o, e, s = Open3.capture3(command)
   end
 
   #--------------------------------------------------------------

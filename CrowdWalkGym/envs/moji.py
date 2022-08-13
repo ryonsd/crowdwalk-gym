@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 import subprocess
 import numpy as np
-import pandas as pd
 import gym
 import os
 import json
 import sys
-
-# sys.path.append("../")
-# from CrowdWalkGym.tools import create_properties_file
 
 import warnings
 warnings.simplefilter('ignore')
@@ -70,8 +66,8 @@ class MojiEnv(gym.Env):
             # subprocess.Popen(["sh", self.path_to_crowdwalk+"quickstart.sh", self.prop_file, "-lError"], stderr=subprocess.DEVNULL)
             subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-lError"])
         else:
-            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
-            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
+            # subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"], stderr=subprocess.DEVNULL)
+            subprocess.Popen(["sh", self.path_to_crowdwalk_dir+"quickstart.sh", self.prop_file, "-c", "-lError"])
         return np.zeros(self.nS)
 
     def step(self):
@@ -108,35 +104,6 @@ class MojiSmallEnv(MojiEnv):
 
             "goal_link": {"id": "_p00003" ,"length": 100,  "width": np.inf},
         }
-
-        # self.is_gui = is_gui
-
-        # self.nS = 12
-        # self.observation_space = gym.spaces.Box(low=0, high=10000, shape=(13,))
-        
-        # self.nA = 2
-        # self.action_space = gym.spaces.Discrete(2)
-
-        # self.link = {
-        #     "start_link": {"id": "_p00001" ,"length": 50,  "width": 1},
-
-        #     "route1_1": {"id": "_p00002" ,"length": 100,  "width": 1},
-        #     "route1_2": {"id": "_p00005" ,"length": 100,  "width": 1},
-        #     "route1_3": {"id": "_p00007" ,"length": 100,  "width": 1},
-
-        #     "route2_1": {"id": "_p00008" ,"length": 100,  "width": 1},
-        #     "route2_2": {"id": "_p00009" ,"length": 100,  "width": 1},
-        #     "route2_3": {"id": "_p00010" ,"length": 100,  "width": 1},
-        #     "route2_4": {"id": "_p00048" ,"length": 50,  "width": 1},
-        #     "route2_5": {"id": "_p00064" ,"length": 50,  "width": 1},
-        #     "route2_6": {"id": "_p00066" ,"length": 50,  "width": 1},
-        #     "route2_7": {"id": "_p00011" ,"length": 100,  "width": 1},
-
-        #     "goal_link": {"id": "_p00003" ,"length": 100,  "width": np.inf},
-        # }
-
-        # self.route1_length = 0.3
-        # self.route2_length = 0.55
 
     def prepare(self, path_to_crowdwalk_dir, path_to_gym, path_to_run_dir, n_obj):
         sys.path.append(path_to_gym)

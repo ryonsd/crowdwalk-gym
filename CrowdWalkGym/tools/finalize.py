@@ -5,6 +5,7 @@ import pandas as pd
 import os
 import json
 import sys
+import math
 
 def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
     link_dict = {} # length, width, density of each link
@@ -31,10 +32,10 @@ def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
                         link_attribute["n_ped"][t] += 1
                         link_attribute["density"][t] += 1 / (link_attribute["length"]* link_attribute["width"])
     
-     # congestion_degree
+    # congestion_degree
     congestion_degree = 0
     for link_name, link_attribute in link_dict.items():
-        congestion_degree += sum(link_attribute["density"] > 0.71) #.astype(int)
+        congestion_degree += sum(link_attribute["density"] >= 0.72) #.astype(int)
 
     # travel distance
     if os.path.exists(log_dir + "/agent_dict.json"):
@@ -57,11 +58,11 @@ def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
 
             if route_ == "route1":
                 route = 1
-#                 distance = 1. - env.route1_length - 0.3 # two-routes: 1-0.4-0.3 = 0.3
+                # distance = 1. - env.route1_length - 0.3 # two-routes: 1-0.4-0.3 = 0.3
                 distance = 1. - env.route1_length - 0.45 # moji: 1-0.3-0.45=0.25
             elif route_ == "route2":
                 route = 2
-#                 distance = 1. - env.route2_length - 0.3 # two-routes: 1-0.7-0.3 = 0
+                # distance = 1. - env.route2_length - 0.3 # two-routes: 1-0.7-0.3 = 0
                 distance = 1. - env.route2_length - 0.45 # moji: 1-0.55-0.45 = 0
 
             if agent_id not in agent_dict:
@@ -77,8 +78,7 @@ def get_reward(env, log, step_s, step_e, log_dir, n_obj, sample_t = 30):
     if n_obj == 1:
         reward = -int(congestion_degree)
     elif n_obj == 2:
-        # reward = [-int(congestion_degree), -float(travel_distance)]
-        reward = [float(travel_distance), -int(congestion_degree)]
+        reward = [int(travel_distance), -int(congestion_degree)]
 
     done = True
 
@@ -119,7 +119,9 @@ if __name__ == '__main__':
         history = json.load(f)
 
     history[str(step)]["reward"] = reward
-    history[str(step)]["next_state"] = list(np.zeros(env.nS+1))
+    next_state = [step+1]
+    next_state.extend(list(np.zeros(env.nS+1)))
+    history[str(step)]["next_state"] = next_state
     history[str(step)]["done"] = done
 
     with open(agent_log_dir + "/history.json", "w") as f:

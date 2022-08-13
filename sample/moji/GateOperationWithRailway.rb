@@ -124,7 +124,8 @@ class GateOperationWithRailway < CrowdWalkWrapper
     " " + sim_previous_step.to_s +
     " " + sim_final_step.to_s +
     " " + $settings[:path_to_crowdwalk_config_dir] +
-    " " + $settings[:path_to_agent_log]
+    " " + $settings[:path_to_agent_log] +
+    " " + $settings[:n_obj]
 
     o, e, s = Open3.capture3(command) # output, error, status
   end
@@ -167,20 +168,32 @@ class GateOperationWithRailway < CrowdWalkWrapper
       # p absoluteTime
       
       # set guide to simulation
-      is_step = false
-      while !is_step do
-        history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
-          JSON.load(f)
-        end
-        begin
-          if !history[@step.to_s]["action"].to_f.nan? 
-            is_step = true
-          end
-        rescue 
-          p "transition is not added yet"
-        end
+      # is_step = false
+      # while !is_step do
+      #   history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+      #     JSON.load(f)
+      #   end
+      #   begin
+      #     if !history[@step.to_s]["action"].to_f.nan? 
+      #       action = history[@step.to_s]["action"]
+      #       is_step = true
+      #     end
+      #   rescue 
+      #     p "transition is not added yet"
+      #     @step -= 1
+      #     get_state_reward(relativeTime-1)
+      #     action = 0
+      #     is_step = true
+      #   end
+      # end
+
+      check_action_selected(relativeTime)
+      history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+        JSON.load(f)
       end
       action = history[@step.to_s]["action"]
+      # print "do ", action, "\n"
+
 
       if action == 0    
         term_1 = ItkTerm.newTerm("guide_route1")
@@ -203,6 +216,17 @@ class GateOperationWithRailway < CrowdWalkWrapper
 
   #--------------------------------------------------------------
   #++
+  ## 
+  def check_action_selected(simTime)
+    command = "python " + $settings[:path_to_gym] + "tools/check_action_selected.py" +
+    " " + @step.to_s +
+    " " + $settings[:path_to_agent_log]
+
+    o, e, s = Open3.capture3(command)
+  end
+
+  #--------------------------------------------------------------
+  #++
   ## update の最後に呼び出される。
   ## _relTime_:: シミュレーション内相対時刻
   def postUpdate(simTime)
@@ -218,7 +242,7 @@ class GateOperationWithRailway < CrowdWalkWrapper
   #++
   ## get state and reward
   def get_state_reward(relativeTime)
-
+    
     command = "python " + $settings[:path_to_gym] + "tools/get_state_reward.py" +
     " " + $settings[:path_to_gym] +
     " " + $settings[:env] +
@@ -226,7 +250,8 @@ class GateOperationWithRailway < CrowdWalkWrapper
     " " + $settings[:step_duration].to_s +
     " " + relativeTime.to_s +
     " " + $settings[:path_to_crowdwalk_config_dir] +
-    " " + $settings[:path_to_agent_log]
+    " " + $settings[:path_to_agent_log] +
+    " " + $settings[:n_obj]
 
     o, e, s = Open3.capture3(command) # output, error, status
 

@@ -111,27 +111,11 @@ class GateOperation < CrowdWalkWrapper
     
     # action selection
     if (absoluteTime-1) % $settings[:step_duration] == 0
-      # p absoluteTime
-      
-      # set guide to simulation
-      is_step = false
-      while !is_step do
-        history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
-          JSON.load(f)
-        end
-        begin
-          if !history[@step.to_s]["action"].to_f.nan? 
-            action = history[@step.to_s]["action"]
-            is_step = true
-          end
-        rescue 
-          # p "transition is not added yet"
-          @step -= 1
-          get_state_reward(absoluteTime-1)
-          action = 0
-          is_step = true
-        end
+      check_action_selected(absoluteTime)
+      history = File.open($settings[:path_to_agent_log]+"history.json") do |f|
+        JSON.load(f)
       end
+      action = history[@step.to_s]["action"]
       
 
       if action == 0    
@@ -150,6 +134,17 @@ class GateOperation < CrowdWalkWrapper
 
     @sim_step += 1
 
+  end
+
+  #--------------------------------------------------------------
+  #++
+  ## 
+  def check_action_selected(simTime)
+    command = "python " + $settings[:path_to_gym] + "tools/check_action_selected.py" +
+    " " + @step.to_s +
+    " " + $settings[:path_to_agent_log]
+
+    o, e, s = Open3.capture3(command)
   end
 
 

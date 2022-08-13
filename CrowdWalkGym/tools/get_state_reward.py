@@ -6,7 +6,6 @@ import os
 import json
 import sys
 
-
 def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 30):
 
     # リンク上の各時刻の歩行者数および密度
@@ -39,13 +38,12 @@ def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 3
                         if t == T-1:
                             next_state_dict[link_name] += 1
 
-    # print(link_dict["route1_6"])
     next_state = list(next_state_dict.values())
 
     # congestion_degree
     congestion_degree = 0
     for link_name, link_attribute in link_dict.items():
-        congestion_degree += sum(link_attribute["density"] > 0.71) #.astype(int)
+        congestion_degree += sum(link_attribute["density"] >= 0.72) #.astype(int)
 
     # travel distance
     if os.path.exists(log_dir + "/agent_dict.json"):
@@ -69,11 +67,11 @@ def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 3
 
             if route_ == "route1":
                 route = 1
-#                 distance = 1. - env.route1_length - 0.3 # two-routes: 1-0.4-0.3 = 0.3
+                # distance = 1. - env.route1_length - 0.3 # two-routes: 1-0.4-0.3 = 0.3
                 distance = 1. - env.route1_length - 0.45 # moji: 1-0.3-0.45=0.25
             elif route_ == "route2":
                 route = 2
-#                 distance = 1. - env.route2_length - 0.3 # two-routes: 1-0.7-0.3 = 0
+                # distance = 1. - env.route2_length - 0.3 # two-routes: 1-0.7-0.3 = 0
                 distance = 1. - env.route2_length - 0.45 # moji: 1-0.55-0.45 = 0
 
             if agent_id not in agent_dict:
@@ -89,8 +87,7 @@ def get_state_reward(env, log, step_duration, step, log_dir, n_obj, sample_t = 3
     if n_obj == 1:
         reward = -int(congestion_degree)
     elif n_obj == 2:
-        # reward = [-int(congestion_degree), -float(travel_distance)]
-        reward = [float(travel_distance), -int(congestion_degree)]
+        reward = [int(travel_distance), -int(congestion_degree)]
 
     done = False
 
@@ -129,7 +126,7 @@ if __name__ == '__main__':
     gen = pd.read_csv(sim_dir + "/generation.csv")
     next_generation_pedestrian_number = gen[gen.step == (step+1)]["n_ped"].values[0]
 
-    next_state = [int(next_generation_pedestrian_number)]
+    next_state = [step+1, int(next_generation_pedestrian_number)]
     next_state.extend(next_state_)
     
 
