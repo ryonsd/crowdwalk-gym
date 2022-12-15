@@ -9,6 +9,8 @@ CrowdWalk is a multi-agent pedestrian flow simulator.
 
 ### Install CrowdWalk
 
+Please follow a documentation (https://github.com/ryonsd/CrowdWalk#installation).
+
 ### Install CrowdWalk-Gym
 ```bash
 pip install crowdwalk-gym
