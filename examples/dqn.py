@@ -1,7 +1,8 @@
 """
 DQN pytorch implementation is based on
 Andrew Gordienko: Reinforcement Learning: DQN w Pytorch
-https://andrew-gordienko.medium.com/reinforcement-learning-dqn-w-pytorch-7c6faad3d1e
+site: https://andrew-gordienko.medium.com/reinforcement-learning-dqn-w-pytorch-7c6faad3d1e
+GitHub: https://github.com/AndrewGordienko/Reinforcement-Learning/blob/master/dqn.py
 """
 
 
