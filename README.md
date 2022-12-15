@@ -1,8 +1,19 @@
-# CrowdWalkGym
-API for reinforcement learning, and crowd movement simulation environments.
-CrowdWalk, a multi-agent pedestrian flow simulator, is used for representing crowd movements.
+# CrowdWalk-Gym
+CrowdWalk-Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for Crowd Movement Control.  
+CrowdWalk is a multi-agent pedestrian flow simulator.
 
 ![overview](images/overview.png)
+
+
+## Install
+
+### Install CrowdWalk
+
+### Install CrowdWalk-Gym
+```bash
+pip install crowdwalk-gym
+```
+
 
 # Environments
 | ![two_routes](images/two_routes.gif)          | ![moji](images/moji.gif) |
