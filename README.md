@@ -2,7 +2,7 @@
 CrowdWalk-Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for Crowd Movement Control.  
 CrowdWalk is a multi-agent pedestrian flow simulator.
 
-![overview](images/overview.png)
+![overview](docs/overview.png)
 
 
 ## Install
@@ -18,7 +18,7 @@ pip install crowdwalk-gym
 
 
 # Environments
-| ![two_routes](images/two_routes.gif)          | ![moji](images/moji.gif) |
+| ![two_routes](docs/two_routes.gif)          | ![moji](docs/moji.gif) |
 | ----------------------------------------- | ------------------------------------- |
 | Two routes | Real map (moji port) |
 
@@ -39,7 +39,7 @@ python dqn.py --env_name two_routes
 # Examples
 The result of learning route guidance with DQN that minimizes congestion degree in "two_routes" and "moji" environment.
 
-| ![result](images/result_two_routes.png)          | ![result](images/result_moji.png) |
+| ![result](docs/result_two_routes.png)          | ![result](docs/result_moji.png) |
 | ----------------------------------------- | ------------------------------------- |
 | Two routes | Real map (moji port) |
 
