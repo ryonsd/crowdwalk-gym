@@ -1,6 +1,6 @@
-# CrowdWalk-Gym
-CrowdWalk-Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for Crowd Movement Control.  
-CrowdWalk is a multi-agent pedestrian flow simulator.
+# CrowdWalk Gym
+CrowdWalk Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for Crowd Route Guidance.  
+[CrowdWalk](https://github.com/crest-cassia/CrowdWalk) is a multi-agent crowd movement simulator.
 
 ![overview](docs/overview.png)
 
@@ -13,7 +13,9 @@ Please follow a documentation (https://github.com/crest-cassia/CrowdWalk).
 
 ### Install CrowdWalk-Gym
 ```bash
-pip install crowdwalk-gym
+git clone git@github.com:ryonsd/crowdwalk-gym.git
+cd crowdwalk-gym
+pip install -e .
 ```
 
 
