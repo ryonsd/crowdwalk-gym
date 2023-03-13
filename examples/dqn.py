@@ -16,7 +16,7 @@ from itertools import count
 
 import gym
 sys.path.append("../")
-import CrowdWalkGym
+import crowdwalk_gym
 
 import torch
 import torch.nn as nn
@@ -178,6 +178,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser() 
     parser.add_argument('--env_name', default='two_routes')
+    parser.add_argument('--gui', action='store_true')
 
     args = parser.parse_args()
 
@@ -189,11 +190,11 @@ if __name__ == '__main__':
         env_id = "moji-v1"
 
     path_to_crowdwalk_dir = "/home/nishida/CrowdWalk_nsd/crowdwalk/"
-    path_to_gym = "/home/nishida/Project/CrowdWalkGym/CrowdWalkGym/"
+    path_to_gym = os.path.abspath('..') + "/crowdwalk_gym/"
     path_to_run_dir = os.getcwd() + "/run/" + args.env_name + "/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     os.makedirs(path_to_run_dir)
 
-    env = gym.make(env_id, is_gui=False)
+    env = gym.make(env_id, is_gui=args.gui)
     env.prepare(path_to_crowdwalk_dir, path_to_gym, path_to_run_dir, n_obj=1)
 
     writer = tb.SummaryWriter(logdir=path_to_run_dir)

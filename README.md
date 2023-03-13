@@ -1,5 +1,5 @@
 # CrowdWalk Gym
-CrowdWalk Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for Crowd Route Guidance.  
+CrowdWalk Gym provides a simple interface to instantiate Reinforcement Learning environments with CrowdWalk for crowd route guidance.  
 [CrowdWalk](https://github.com/crest-cassia/CrowdWalk) is a multi-agent crowd movement simulator.
 
 ![overview](docs/overview.png)
