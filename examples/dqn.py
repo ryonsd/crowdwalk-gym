@@ -177,6 +177,7 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser() 
+    parser.add_argument('--simulator_dir')
     parser.add_argument('--env_name', default='two_routes')
     parser.add_argument('--gui', action='store_true')
 
@@ -189,7 +190,7 @@ if __name__ == '__main__':
     elif args.env_name == "moji_small":
         env_id = "moji-v1"
 
-    path_to_crowdwalk_dir = "/home/nishida/CrowdWalk_nsd/crowdwalk/"
+    path_to_crowdwalk_dir = args.simulator_dir + "/crowdwalk/"
     path_to_gym = os.path.abspath('..') + "/crowdwalk_gym/"
     path_to_run_dir = os.getcwd() + "/run/" + args.env_name + "/" + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     os.makedirs(path_to_run_dir)
@@ -224,7 +225,7 @@ if __name__ == '__main__':
         e_reward = np.zeros(OBJ_SIZE)
         e_loss = 0
         done = False
-
+        
         env.reset()
         while True:
 
