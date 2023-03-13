@@ -16,6 +16,7 @@ Please follow a documentation (https://github.com/crest-cassia/CrowdWalk).
 git clone git@github.com:ryonsd/crowdwalk-gym.git
 cd crowdwalk-gym
 pip install -e .
+$ cp -rp sample/* <path-to-your-CrowdWalk-dir>/crowdwalk/sample/
 ```
 
 
@@ -35,7 +36,7 @@ Its reduction makes the calculation time is shorter, 1 episode is 1 min.
 If you test your algorithm tentatively, using "two_routes" is best because 1 episode is 12 seconds.
 
 ```
-python dqn.py --env_name two_routes
+python dqn.py --simulator_dir <path-to-your-CrowdWalk-dir> --env_name two_routes --gui
 ```
 
 # Examples
